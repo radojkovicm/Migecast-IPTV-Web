@@ -1,12 +1,23 @@
 # Migecast IPTV Web
 
-A simple browser player for live TV, movies and series, with large controls and a
-Serbian Latin interface. Two independent ways to run it:
+A browser-based IPTV player with large, simple controls and a Serbian Latin interface.
+The public demo includes **Kurir TV, DELUXE MUSIC and Tagesschau24** — no login,
+subscription or backend required.
 
-| Edition | Includes | Runs on |
+![Migecast IPTV Web demo: channel list, favorites and player](docs/images/demo-desktop.png)
+
+*Actual desktop interface before selecting a channel. Channel availability varies by location and source.*
+
+## What is included?
+
+| Edition | Features | Hosting |
 | --- | --- | --- |
-| Public TV demo | Three public channel links, favorites, search, fullscreen | Cloudflare Pages, Vercel, any static HTTPS host |
-| Self-hosted application | Private accounts, owner administration, multiple playlists, VOD, series, resume, per-user favorites | Node.js + PostgreSQL + FFmpeg on your own server |
+| Public TV demo | Three public channels, search, saved favorites, fullscreen and picture fit | Cloudflare Pages, Vercel or any static HTTPS host |
+| Self-hosted application | Owner-managed accounts and playlists, live TV, movies, series, resume and per-user favorites | Your own Node.js, PostgreSQL and FFmpeg server |
+
+This repository is a standalone public snapshot. The demo contains only the
+three channels listed above; movies, series and account management belong to the
+self-hosted edition. No hosted demo URL is available yet.
 
 ## Try the public demo locally
 

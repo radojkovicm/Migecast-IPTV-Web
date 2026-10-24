@@ -1,0 +1,67 @@
+# Manual candidate. Ports/certificate paths require operator verification.
+# Include inside nginx http{} (sites-enabled normally is); never proxy worker/DB.
+log_format migecast_safe '$remote_addr [$time_local] "$request_method $uri" $status $body_bytes_sent';
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name migecast.example.com;
+    access_log /var/log/nginx/migecast-access.log migecast_safe;
+    error_log /dev/null crit;
+    # Obtain TLS with the existing host ACME workflow before enabling this file.
+    return 308 https://migecast.example.com$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name migecast.example.com;
+    ssl_certificate /etc/letsencrypt/live/migecast.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/migecast.example.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    # App supplies other security headers; do not override its media policy.
+    access_log /var/log/nginx/migecast-access.log migecast_safe;
+    # Nginx error entries can include full requests/tokens. Disable for this site.
+    # Diagnose with bounded application status/metrics, never debug request logs.
+    error_log /dev/null crit;
+    client_max_body_size 32m;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_set_header Connection "";
+    proxy_connect_timeout 5s;
+    proxy_send_timeout 60s;
+    proxy_read_timeout 60s;
+
+    # Prevent nginx's automatic trailing-slash redirect on the session endpoint.
+    # Next.js removes that slash, which otherwise creates a redirect loop.
+    location = /api/playback {
+        access_log off;
+        proxy_pass http://127.0.0.1:3100;
+        proxy_cache off;
+    }
+
+    location ^~ /api/playback/ {
+        access_log off;
+        proxy_pass http://127.0.0.1:3100;
+        proxy_buffering off;
+        proxy_request_buffering off;
+        proxy_cache off;
+        proxy_read_timeout 90s;
+        gzip off;
+    }
+    # Three bounded category/list fetch pairs plus the atomic import transaction
+    # can legitimately exceed the default 60 seconds. Only owner refresh gets this budget.
+    location ~ ^/api/admin/playlists/[^/]+/refresh$ {
+        proxy_pass http://127.0.0.1:3100;
+        proxy_cache off;
+        proxy_read_timeout 600s;
+    }
+    location / {
+        proxy_pass http://127.0.0.1:3100;
+        proxy_cache off;
+    }
+}

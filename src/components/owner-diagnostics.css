@@ -1,0 +1,98 @@
+.owner-diagnostics {
+	margin: 24px 0 32px;
+}
+.owner-diagnostics > header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 16px;
+}
+.owner-diagnostics h2,
+.owner-diagnostics h3,
+.owner-diagnostics h4 {
+	margin: 0 0 12px;
+}
+.owner-diagnostics h3 {
+	margin-top: 28px;
+}
+.owner-diagnostics h4 {
+	font-size: 21px;
+	overflow-wrap: anywhere;
+}
+.owner-diagnostics p {
+	margin: 8px 0;
+}
+.diagnostics-service {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	padding: 16px;
+	background: #1c2b40;
+	border: 1px solid #40536f;
+	border-radius: 12px;
+	margin: 16px 0;
+}
+.diagnostics-service small {
+	margin-left: auto;
+}
+.diagnostics-good {
+	color: #8ae0ac;
+}
+.diagnostics-warning {
+	color: #ffd086;
+}
+.diagnostics-note,
+.diagnostics-card small {
+	color: #bdcbe0;
+}
+.diagnostics-search {
+	display: grid;
+	gap: 8px;
+	margin-top: 20px;
+	max-width: 640px;
+}
+.diagnostics-search input {
+	width: 100%;
+	min-height: 48px;
+	padding: 12px 14px;
+	border: 1px solid #53647a;
+	border-radius: 10px;
+	background: var(--surface);
+	color: var(--text);
+}
+.diagnostics-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+	gap: 16px;
+}
+.diagnostics-card {
+	padding: 20px;
+	background: linear-gradient(145deg, #1d2b40, #152032);
+	border: 1px solid #40516b;
+	border-radius: 14px;
+	min-width: 0;
+}
+.diagnostics-card ul {
+	padding-left: 20px;
+	line-height: 1.7;
+}
+.diagnostics-card li,
+.diagnostics-card p {
+	overflow-wrap: anywhere;
+}
+.diagnostics-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 16px;
+}
+.diagnostics-actions .button {
+	min-height: 44px;
+}
+
+.owner-diagnostics h4 small {
+	display: block;
+	font-size: 15px;
+	margin-top: 4px;
+}

@@ -1,0 +1,10 @@
+version: 1
+name: migecast-provider
+slug: migecast-provider
+protocol: http
+port: 45689
+interceptRequests: true
+scenarios:
+  - name: default
+    path: ./default.js
+    default: true

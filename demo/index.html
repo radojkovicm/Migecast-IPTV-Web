@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="sr-Latn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Migecast IPTV Web — javni TV demo u browseru.">
+<title>Migecast IPTV Web</title>
+<link rel="stylesheet" href="style.css">
+<script src="vendor/hls.min.js" defer></script><script type="module" src="app.js"></script>
+</head>
+<body>
+<header><a class="brand" href="./">M<span>i</span>gecast <small>WEB</small></a><span class="badge">TV · Javni demo</span><button type="button" id="app-fullscreen" aria-label="Ceo ekran" title="Ceo ekran">⛶</button></header>
+<main>
+<aside aria-label="TV kanali">
+<nav aria-label="Kategorije"><button type="button" id="all" aria-pressed="true">Svi kanali</button><button type="button" id="favorites" aria-pressed="false">★ Omiljeno</button></nav>
+<label for="search">Pronađi kanal</label><input id="search" type="search" placeholder="Ime kanala" autocomplete="off">
+<div id="channels"></div>
+</aside>
+<section class="view" aria-label="Plejer">
+<div id="player" tabindex="-1">
+<!-- biome-ignore lint/a11y/useMediaCaption: Live captions are supplied by the HLS source when available. -->
+<video id="video" controls playsinline preload="none" aria-label="TV reprodukcija"></video>
+<div id="placeholder">Izaberite kanal sa liste</div>
+<button type="button" id="exit-fullscreen" aria-label="Smanji ekran" title="Smanji ekran">↙</button>
+</div>
+<div class="player-bar"><div><p class="eyebrow">UŽIVO</p><h1 id="now">Migecast IPTV Web</h1></div><div class="actions"><button type="button" id="retry" title="Pokušaj ponovo" aria-label="Pokušaj ponovo">↻</button><button type="button" id="fit" aria-label="Popuni ekran" title="Popuni ekran" aria-pressed="false">↔</button><button type="button" id="fullscreen" aria-label="Povećaj plejer" title="Povećaj plejer">⛶</button></div></div>
+<p id="status" role="status" aria-live="polite">Odaberite jedan od javnih TV kanala.</p>
+<p class="note">Demo koristi javne linkove sa <a href="https://github.com/Free-TV/IPTV/tree/master/lists" target="_blank" rel="noopener noreferrer">Free-TV/IPTV liste</a>. Dostupnost zavisi od emitera i vaše lokacije. Video se učitava direktno od izvora.</p>
+</section>
+</main>
+<footer>TV demo bez naloga · Omiljeni se čuvaju samo u ovom browseru.</footer>
+</body></html>

@@ -1,0 +1,43 @@
+# DATABASE ONLY. App + worker run as separate host systemd services.
+# Use a dedicated project, volume and credentials. Do not reuse an existing DB.
+name: migecast
+services:
+  db:
+    # Supply the audited 64-hex PostgreSQL 17 Alpine image digest.
+    image: "postgres:17-alpine@sha256:${MIGECAST_POSTGRES_SHA256:?Set reviewed PostgreSQL 17 image SHA256}"
+    restart: unless-stopped
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+    environment:
+      POSTGRES_DB: migecast
+      POSTGRES_USER: migecast
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    secrets:
+      - db_password
+    ports:
+      - "127.0.0.1:${MIGECAST_DB_PORT:?Select a verified unused loopback port}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    mem_limit: 384m
+    memswap_limit: 384m
+    cpus: 0.5
+    pids_limit: 128
+    shm_size: 64m
+    logging:
+      driver: local
+      options:
+        max-size: "5m"
+        max-file: "2"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "migecast", "-d", "migecast"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+secrets:
+  db_password:
+    file: /etc/migecast/db-password
+volumes:
+  pgdata:
+    name: migecast_pgdata

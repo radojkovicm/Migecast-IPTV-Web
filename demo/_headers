@@ -1,0 +1,6 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self' https://sdn-global-live-streaming-packager-cache.3qsdn.com https://tagesschau.akamaized.net https://static.am.mediaoutcast.com; media-src 'self' blob: https://sdn-global-live-streaming-packager-cache.3qsdn.com https://tagesschau.akamaized.net https://static.am.mediaoutcast.com; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'

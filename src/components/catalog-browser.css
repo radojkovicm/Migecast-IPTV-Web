@@ -1,0 +1,366 @@
+/* Movie information and viewing stay in the foreground, independent of scroll. */
+.media-details-dialog {
+	width: min(1080px, calc(100vw - 40px));
+	max-width: none;
+	max-height: calc(100dvh - 48px);
+	padding: 40px;
+	border: 1px solid #51647e;
+	border-radius: 24px;
+	background: linear-gradient(145deg, #202e42, #111a28);
+	color: #f4f7fc;
+	box-shadow: 0 28px 90px #000a;
+	overflow-y: auto;
+}
+.media-details-dialog::backdrop {
+	background: #050913d9;
+	backdrop-filter: blur(6px);
+}
+.detail-close {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	width: 52px;
+	min-height: 52px;
+	padding: 0;
+	border-radius: 50%;
+	background: #0b1321;
+	color: white;
+	font-size: 34px;
+	line-height: 1;
+	z-index: 1;
+}
+.media-detail-summary {
+	display: grid;
+	grid-template-columns: 220px minmax(0, 1fr);
+	gap: 32px;
+}
+.detail-poster {
+	width: 100%;
+	aspect-ratio: 2 / 3;
+	object-fit: cover;
+	border-radius: 14px;
+	background: #1c293d;
+}
+.detail-copy {
+	min-width: 0;
+	padding: 4px 24px 0 0;
+}
+.detail-kind {
+	color: #abcaff;
+	margin: 0 0 6px;
+	font-size: 17px;
+}
+.detail-copy h2 {
+	font-size: clamp(26px, 3vw, 38px);
+	margin: 0 0 14px;
+	overflow-wrap: anywhere;
+}
+.detail-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px 18px;
+	color: #d0dced;
+}
+.detail-description {
+	line-height: 1.7;
+	white-space: pre-line;
+	overflow-wrap: anywhere;
+}
+.detail-credits {
+	font-size: 16px;
+	color: #c0cee1;
+}
+.detail-credits strong {
+	color: #fff;
+	margin-right: 8px;
+}
+.detail-actions {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-top: 24px;
+}
+.detail-actions .primary {
+	gap: 12px;
+}
+.favorite-star {
+	background: transparent;
+	color: #c4cfdf;
+	border: 1px solid transparent;
+	font-size: 30px;
+	min-width: 56px;
+	min-height: 56px;
+	padding: 6px 12px;
+}
+.favorite-star.is-favorite {
+	color: #ffd447;
+}
+.favorite-star:hover {
+	background: #344660;
+}
+.catalog-actions .favorite-star {
+	margin-left: auto;
+}
+.series-episodes {
+	border-top: 1px solid #3b4c64;
+	margin-top: 32px;
+	padding-top: 24px;
+}
+.season-toolbar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 20px;
+	margin-bottom: 20px;
+}
+.season-toolbar label:first-child {
+	display: grid;
+	gap: 6px;
+	min-width: 200px;
+}
+.season-toolbar select {
+	min-height: 56px;
+	padding: 10px 16px;
+	color: #fff;
+	background: #1c2b40;
+	border: 1px solid #61738d;
+	border-radius: 12px;
+	font: inherit;
+}
+.episode-list {
+	display: grid;
+	gap: 10px;
+}
+.episode-row {
+	display: flex;
+	align-items: center;
+	background: #1d2a3d;
+	border: 1px solid #3e5069;
+	border-radius: 14px;
+}
+.episode-row:hover {
+	background: #2a3d58;
+}
+.episode-play {
+	flex: 1;
+	min-width: 0;
+	justify-content: flex-start;
+	gap: 20px;
+	padding: 16px;
+	color: #fff;
+	background: transparent;
+	border: 0;
+	text-align: left;
+}
+.episode-number {
+	font-size: 26px;
+	color: #a9c9ff;
+	min-width: 38px;
+}
+.episode-info {
+	display: grid;
+	gap: 5px;
+	flex: 1;
+	min-width: 0;
+}
+.episode-info strong {
+	font-size: 20px;
+	overflow-wrap: anywhere;
+}
+.episode-info small {
+	color: #c0cde0;
+	font-size: 15px;
+	font-weight: 400;
+}
+.episode-play-icon {
+	color: #bdd7ff;
+	font-size: 24px;
+}
+.library-filters {
+	justify-content: space-between;
+}
+.library-filters label {
+	flex: 1;
+	max-width: 560px;
+}
+.vod-player-dialog {
+	position: fixed;
+	inset: 0;
+	width: 100vw;
+	height: 100dvh;
+	max-width: none;
+	max-height: none;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: #000;
+	color: #fff;
+	overflow: hidden;
+}
+.vod-player-dialog::backdrop {
+	background: #000;
+}
+.vod-player-dialog .cinema-player {
+	width: 100%;
+	height: 100%;
+	border-radius: 0;
+	margin: 0;
+}
+body:has(.vod-player-dialog[open], .media-details-dialog[open]) {
+	overflow: hidden;
+}
+@media (max-width: 700px) {
+	.media-details-dialog {
+		width: 100vw;
+		height: 100dvh;
+		max-height: none;
+		margin: 0;
+		padding: 68px 18px 24px;
+		border: 0;
+		border-radius: 0;
+	}
+	.media-detail-summary {
+		grid-template-columns: 90px minmax(0, 1fr);
+		gap: 16px;
+	}
+	.detail-copy {
+		padding: 0;
+	}
+	.detail-copy h2 {
+		font-size: 25px;
+	}
+	.detail-description,
+	.detail-credits {
+		font-size: 16px;
+	}
+	.detail-meta {
+		font-size: 15px;
+	}
+	.detail-actions {
+		margin-left: -106px;
+		padding-top: 16px;
+	}
+	.episode-play {
+		gap: 10px;
+		padding: 12px;
+	}
+	.episode-info strong {
+		font-size: 18px;
+	}
+	.episode-number {
+		font-size: 22px;
+		min-width: 28px;
+	}
+	.episode-row .favorite-star {
+		min-width: 44px;
+		padding: 4px;
+	}
+	.episode-play-icon {
+		display: none;
+	}
+	.season-toolbar {
+		gap: 12px;
+	}
+	.library-filters {
+		display: grid;
+	}
+}
+
+.vod-player-surface {
+	width: 100%;
+	height: 100%;
+	background: #000;
+}
+.vod-player-surface:fullscreen {
+	width: 100vw;
+	height: 100dvh;
+}
+
+/* Large, progressively loaded posters with a consistent favorite hit target. */
+.poster-page .catalog-grid {
+	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+	gap: 28px;
+}
+.poster-page .catalog-entry {
+	position: relative;
+	content-visibility: auto;
+	contain-intrinsic-size: auto 470px;
+}
+.poster-page .catalog-card {
+	font-size: 23px;
+	padding: 10px;
+}
+.poster-page .catalog-entry .catalog-actions .favorite-star {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	width: 60px;
+	height: 60px;
+	min-width: 60px;
+	border-radius: 50%;
+	background: #0b1321e6;
+	border: 1px solid #8293ad;
+	font-size: 38px;
+	margin: 0;
+}
+.poster-page .catalog-entry .catalog-actions .favorite-star:hover {
+	background: #304666;
+}
+.catalog-load-more {
+	min-height: 48px;
+	text-align: center;
+	padding: 20px;
+}
+@media (max-width: 600px) {
+	.poster-page .catalog-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 14px;
+	}
+	.poster-page .catalog-card {
+		font-size: 19px;
+		padding: 6px;
+	}
+	.poster-page .catalog-entry .catalog-actions .favorite-star {
+		top: 12px;
+		right: 12px;
+		width: 48px;
+		height: 48px;
+		min-width: 48px;
+		min-height: 48px;
+		font-size: 30px;
+		padding: 4px;
+	}
+}
+
+.favorite-order-toolbar {
+	display: grid;
+	gap: 0.4rem;
+	padding: 0.5rem 0.75rem;
+}
+.favorite-order-toolbar button {
+	min-height: 44px;
+}
+.favorite-order-toolbar small {
+	color: var(--text-muted);
+}
+.favorite-order-actions {
+	display: flex;
+	gap: 0.25rem;
+	flex-shrink: 0;
+}
+.favorite-order-actions button {
+	min-width: 44px;
+	min-height: 44px;
+	font-size: 1.5rem;
+	padding: 0.25rem;
+}
+.channel-choice:disabled {
+	opacity: 1;
+	cursor: default;
+}
+
+.channel-row:has(.favorite-order-actions) .channel-star {
+	display: none;
+}

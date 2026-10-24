@@ -1,0 +1,205 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                  String               @id @default(cuid())
+  name                String
+  email               String               @unique
+  emailVerified       Boolean              @default(false)
+  image               String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  username            String?              @unique
+  displayUsername     String?
+  role                String?              @default("user")
+  banned              Boolean?             @default(false)
+  banReason           String?
+  banExpires          DateTime?
+  twoFactorEnabled    Boolean?             @default(false)
+  sessions            Session[]
+  accounts            Account[]
+  twoFactors          TwoFactor[]
+  playlistRevision    Int                  @default(0)
+  playlistAssignments PlaylistAssignment[]
+  playlistSelection   PlaylistSelection?
+  viewingStates       ViewingState[]
+
+  @@map("user")
+}
+
+model Session {
+  id             String   @id @default(cuid())
+  expiresAt      DateTime
+  token          String   @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?
+  userAgent      String?
+  userId         String
+  impersonatedBy String?
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model TwoFactor {
+  id                      String    @id @default(cuid())
+  secret                  String
+  backupCodes             String
+  userId                  String    @unique
+  verified                Boolean   @default(false)
+  failedVerificationCount Int       @default(0)
+  lockedUntil             DateTime?
+  user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("twoFactor")
+}
+
+model RateLimit {
+  id          String @id @default(cuid())
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+
+  @@map("rateLimit")
+}
+
+model Playlist {
+  id               String               @id
+  name             String
+  kind             String
+  encryptedInput   String               @db.Text
+  providerKey      String
+  revision         Int                  @default(1)
+  entryCount       Int?
+  visibilityRevision Int @default(0)
+  categoryVisibility Json @default("{\"tv\":null,\"movie\":null,\"series\":null}")
+  catalogRevision  Int?
+  catalogUpdatedAt DateTime?
+  catalogItems     CatalogItem[]
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  assignments      PlaylistAssignment[]
+  viewingStates    ViewingState[]
+
+  @@index([providerKey])
+  @@map("playlist")
+}
+
+model PlaylistAssignment {
+  userId     String
+  playlistId String
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  playlist   Playlist            @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  selections PlaylistSelection[]
+
+  @@id([userId, playlistId])
+  @@index([playlistId])
+  @@map("playlistAssignment")
+}
+
+model PlaylistSelection {
+  userId     String             @id
+  playlistId String
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignment PlaylistAssignment @relation(fields: [userId, playlistId], references: [userId, playlistId], onDelete: Cascade)
+
+  @@index([userId, playlistId])
+  @@map("playlistSelection")
+}
+
+model CatalogItem {
+  id               String   @id
+  playlistId       String
+  sourceKey        String
+  kind             String
+  title            String
+  category         String
+  season           Int?
+  episode          Int?
+  parentId         String?
+  encryptedLocator String   @db.Text
+  playlist         Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+
+  @@unique([playlistId, sourceKey])
+  @@index([playlistId, kind, title])
+  @@index([playlistId, parentId])
+  @@map("catalogItem")
+}
+
+model PlaybackLease {
+  id             String   @id
+  providerKey    String   @unique
+  userId         String   @unique
+  sessionId      String
+  playlistId     String
+  sourceRevision Int
+  itemId         String
+  workerJobId    String?
+  expiresAt      DateTime
+  createdAt      DateTime @default(now())
+
+  @@index([expiresAt])
+  @@map("playbackLease")
+}
+
+// No CatalogItem foreign key: catalog snapshots are replaced atomically on refresh.
+// Stable item IDs are scoped to their source, so progress survives those replacements.
+model ViewingState {
+  userId      String
+  playlistId  String
+  providerKey String
+  itemId      String
+  favorite    Boolean  @default(false)
+  favoriteOrder Int?
+  position    Float    @default(0)
+  duration    Float    @default(0)
+  completed   Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  playlist    Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+
+  @@id([userId, playlistId, providerKey, itemId])
+  @@index([userId, playlistId, providerKey, favorite])
+  @@map("viewingState")
+}

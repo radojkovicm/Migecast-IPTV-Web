@@ -1,0 +1,60 @@
+# Candidate for a dedicated Linux/systemd host. Read docs/WORKER_DEPLOYMENT.md.
+[Unit]
+Description=Migecast private media worker
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=migecast-worker
+Group=migecast-worker
+WorkingDirectory=/opt/migecast-worker/current
+EnvironmentFile=/etc/migecast/worker.env
+Environment=NODE_ENV=production
+Environment=TMPDIR=/tmp
+Environment=MEDIA_WORKER_REQUIRE_TMPFS=1
+Environment=FFMPEG_PATH=/opt/migecast-worker/runtime/bin/ffmpeg
+Environment=FFPROBE_PATH=/opt/migecast-worker/runtime/bin/ffprobe
+ExecStartPre=/bin/sh /opt/migecast-worker/current/deploy/systemd/check-runtime.sh
+ExecStart=/opt/migecast-worker/runtime/bin/node --max-old-space-size=128 /opt/migecast-worker/current/dist/worker/main.js
+Restart=on-failure
+RestartSec=5
+KillMode=control-group
+TimeoutStopSec=10
+SendSIGKILL=yes
+OOMPolicy=stop
+UMask=0077
+LimitCORE=0
+LimitNOFILE=256
+CPUAccounting=yes
+CPUQuota=100%
+MemoryAccounting=yes
+MemoryHigh=384M
+MemoryMax=512M
+MemorySwapMax=0
+TasksAccounting=yes
+TasksMax=64
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ProtectHome=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+LockPersonality=yes
+RestrictNamespaces=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+TemporaryFileSystem=/tmp:rw,nosuid,nodev,noexec,size=256M,mode=1777
+InaccessiblePaths=/var/tmp /etc/migecast
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

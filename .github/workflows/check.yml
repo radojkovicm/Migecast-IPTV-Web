@@ -1,0 +1,35 @@
+name: Check
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:generate
+      - run: pnpm type-check
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm test:release
+      - run: pnpm demo:build
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm demo:test
+      - run: pnpm build
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

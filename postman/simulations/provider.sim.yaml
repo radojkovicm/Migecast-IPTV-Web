@@ -1,0 +1,11 @@
+simulation: migecast-provider
+routing: path
+mocks:
+  - routeKey: provider
+    path: ../mocks/provider/config.yaml
+  - routeKey: unavailable
+    path: ../mocks/unavailable/config.yaml
+    scenarios:
+      - overrides:
+          conditions:
+            error: { status_code: 503 }

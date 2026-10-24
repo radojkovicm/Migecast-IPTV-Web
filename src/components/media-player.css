@@ -1,0 +1,242 @@
+section.player-panel.cinema-player {
+	position: relative;
+	isolation: isolate;
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+	background: #000;
+	border-radius: 16px;
+	aspect-ratio: 16 / 9;
+}
+section.player-panel.cinema-player video {
+	width: 100%;
+	height: 100%;
+	max-height: none;
+	margin: 0;
+	object-fit: contain;
+	aspect-ratio: auto;
+}
+section.player-panel.cinema-player.video-fill video {
+	object-fit: cover;
+}
+section.player-panel.cinema-player:fullscreen {
+	width: 100vw;
+	height: 100dvh;
+	border: 0;
+	border-radius: 0;
+}
+.cinema-player .player-overlay {
+	position: absolute;
+	left: 0;
+	right: 0;
+	z-index: 2;
+	opacity: 0;
+	transition: opacity 180ms;
+	pointer-events: none;
+}
+.cinema-player.controls-visible .player-overlay {
+	opacity: 1;
+	pointer-events: auto;
+}
+.cinema-player:not(.controls-visible) {
+	cursor: none;
+}
+.cinema-player .player-top {
+	top: 0;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 16px;
+	padding: 16px;
+	background: linear-gradient(#000b, transparent);
+}
+.cinema-player .player-title {
+	flex: 1;
+	min-width: 0;
+	margin: 0;
+	font-size: clamp(18px, 2vw, 26px);
+	font-weight: 600;
+	text-shadow: 0 2px 4px #000;
+}
+.cinema-player .player-bottom {
+	bottom: 0;
+	padding: 30px 20px 14px;
+	background: linear-gradient(transparent, #000e);
+}
+.cinema-player .player-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+.cinema-player .player-toolbar-spacer {
+	flex: 1;
+}
+.cinema-player .player-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 52px;
+	width: 52px;
+	min-height: 52px;
+	height: 52px;
+	padding: 10px;
+	border: 0;
+	border-radius: 12px;
+	color: #fff;
+	background: #17233470;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+.cinema-player .player-icon:hover,
+.cinema-player .player-icon[aria-pressed="true"] {
+	background: #ffffff30;
+}
+.cinema-player .player-icon:focus-visible {
+	outline: 3px solid #90c9ff;
+	outline-offset: 2px;
+}
+.cinema-player .player-icon svg {
+	width: 30px;
+	height: 30px;
+}
+.cinema-player .player-play {
+	background: #a4d4ff;
+	color: #081626;
+}
+.cinema-player input[type="range"] {
+	accent-color: #a4d4ff;
+	cursor: pointer;
+	padding: 0;
+	min-height: 32px;
+}
+.cinema-player .player-volume {
+	width: 90px;
+}
+.cinema-player .player-live {
+	color: #fff;
+	font-size: 14px;
+	letter-spacing: 0.08em;
+}
+.cinema-player .player-timeline {
+	display: flex;
+	gap: 16px;
+	align-items: center;
+}
+.cinema-player .player-timeline input {
+	flex: 1;
+	width: 0;
+}
+.cinema-player .player-time {
+	color: #fff;
+	font-size: 15px;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+.cinema-player .player-message {
+	position: absolute;
+	left: 50%;
+	top: 45%;
+	transform: translate(-50%, -50%);
+	max-width: 90%;
+	padding: 12px 20px;
+	border-radius: 10px;
+	background: #101722df;
+	color: #fff;
+	font-size: 20px;
+	text-align: center;
+	pointer-events: none;
+}
+.cinema-player .player-settings {
+	position: absolute;
+	z-index: 3;
+	right: 20px;
+	bottom: 110px;
+	width: min(330px, calc(100% - 40px));
+	max-height: 55%;
+	overflow-y: auto;
+	padding: 18px;
+	display: grid;
+	gap: 16px;
+	background: #152032f5;
+	border: 1px solid #526078;
+	border-radius: 16px;
+	box-shadow: 0 10px 40px #0008;
+}
+.cinema-player .player-settings label {
+	display: grid;
+	gap: 6px;
+	font-size: 18px;
+}
+.cinema-player .player-settings select {
+	width: 100%;
+}
+@media (max-width: 600px) {
+	.cinema-player .player-bottom {
+		padding: 20px 8px 8px;
+	}
+	.cinema-player .player-top {
+		padding: 8px;
+	}
+	.cinema-player .player-toolbar {
+		gap: 2px;
+	}
+	.cinema-player .player-icon {
+		min-width: 44px;
+		width: 44px;
+		height: 44px;
+		min-height: 44px;
+		padding: 8px;
+	}
+	.cinema-player .player-volume {
+		display: none;
+	}
+	.cinema-player .player-live {
+		font-size: 12px;
+	}
+	.cinema-player .player-time {
+		font-size: 12px;
+	}
+	.cinema-player .player-timeline {
+		gap: 8px;
+	}
+	.cinema-player .player-settings {
+		bottom: 70px;
+		max-height: 65%;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.cinema-player .player-overlay {
+		transition: none;
+	}
+}
+
+section.player-panel.cinema-player video:focus-visible {
+	outline: 3px solid #90c9ff;
+	outline-offset: -3px;
+}
+
+.cinema-player .player-canvas {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+section.player-panel.cinema-player.viewport-fullscreen {
+	position: fixed;
+	inset: 0;
+	z-index: 1000;
+	width: 100vw;
+	height: 100dvh;
+	border: 0;
+	border-radius: 0;
+}
+/* Keep video and touch controls horizontal even when orientation lock is unavailable. */
+@media (pointer: coarse) and (orientation: portrait) {
+	.cinema-player.landscape-player .player-canvas {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 100dvh;
+		height: 100vw;
+		transform: translate(-50%, -50%) rotate(90deg);
+	}
+}

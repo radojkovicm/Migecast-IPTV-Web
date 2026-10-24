@@ -1,0 +1,10 @@
+version: 1
+name: migecast-unavailable
+slug: migecast-unavailable
+protocol: http
+port: 45689
+interceptRequests: true
+scenarios:
+  - name: default
+    path: ./default.js
+    default: true

@@ -1,0 +1,13 @@
+# Manual opt-in after a successful restore drill and failure alert configuration.
+[Unit]
+Description=Daily Migecast database backup
+
+[Timer]
+OnCalendar=*-*-* 03:15:00 UTC
+RandomizedDelaySec=15min
+AccuracySec=1min
+Persistent=yes
+Unit=migecast-backup.service
+
+[Install]
+WantedBy=timers.target

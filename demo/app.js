@@ -38,13 +38,24 @@ const countryLabel = (channel) => {
 		return channel.country;
 	}
 };
+const pinnedCountries = [
+	"Serbia",
+	"Croatia",
+	"Bosnia and Herzegovina",
+	"Slovenia",
+	"Montenegro",
+	"North Macedonia",
+];
+const countryRank = (country) => {
+	const index = pinnedCountries.indexOf(country);
+	return index < 0 ? pinnedCountries.length : index;
+};
 function render() {
 	$("channels").replaceChildren();
 	filtered = channels.filter(
 		(c) =>
 			(!favoritesOnly || favorites.has(c.id)) &&
 			(!$("country").value || c.country === $("country").value) &&
-			(!$("playable").checked || ["hls", "video"].includes(c.kind)) &&
 			c.name.toLowerCase().includes($("search").value.toLowerCase()),
 	);
 	rendered = 0;
@@ -166,7 +177,8 @@ function play(channel) {
 	timeout = setTimeout(fail, 25000);
 	if (
 		channel.kind === "video" ||
-		video.canPlayType("application/vnd.apple.mpegurl")
+		(!globalThis.Hls?.isSupported() &&
+			video.canPlayType("application/vnd.apple.mpegurl"))
 	) {
 		video.src = channel.url;
 		attemptPlay();
@@ -256,7 +268,6 @@ $("fit").onclick = () => {
 };
 $("search").oninput = render;
 $("country").onchange = render;
-$("playable").onchange = render;
 for (const [id, value] of [
 	["all", false],
 	["favorites", true],
@@ -272,11 +283,15 @@ try {
 	const response = await fetch("channels.json");
 	if (!response.ok) throw new Error();
 	const snapshot = await response.json();
-	channels = snapshot.channels;
+	channels = snapshot.channels.filter(
+		(c) => ["hls", "video"].includes(c.kind) && c.url.startsWith("https:"),
+	);
 	if (!Array.isArray(channels)) throw new Error("Invalid catalog");
 	const countries = new Map(channels.map((c) => [c.country, countryLabel(c)]));
-	for (const [country, label] of [...countries].sort((a, b) =>
-		a[1].localeCompare(b[1], "sr-Latn"),
+	for (const [country, label] of [...countries].sort(
+		(a, b) =>
+			countryRank(a[0]) - countryRank(b[0]) ||
+			a[1].localeCompare(b[1], "sr-Latn"),
 	)) {
 		const option = document.createElement("option");
 		option.value = country;

@@ -73,10 +73,13 @@ an unavailable source or bypass a source's access restrictions.
 
 ### Catalog scope and refresh
 
-The current snapshot contains **2,051 entries across 97 countries/groups**.
-**1,502** entries have a direct HTTPS HLS/video URL; that is format eligibility,
-not a guarantee of playback or permission. Other entries remain searchable with
-an external source link or an explanation. Duplicate entries are removed, and
+The current snapshot contains **1,502 direct HTTPS HLS/video sources across 93 countries/groups**.
+This is format eligibility, not a guarantee of playback or permission. Website-only
+and non-HTTPS entries are excluded. Serbia, Croatia, Bosnia and Herzegovina,
+Slovenia, Montenegro and North Macedonia appear first in the country selector.
+The demo includes a **Download M3U playlist** link (`channels.m3u`), generated at
+build time from the same snapshot, with countries stored as `group-title` categories.
+It can be imported into another player as a backup. Duplicate entries are removed, and
 credential-bearing URLs, signed links and literal private-network destinations
 are not retained. No paid lists or private accounts are included.
 

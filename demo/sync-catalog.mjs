@@ -18,7 +18,9 @@ if (!response.ok) throw new Error("Cannot download public playlist");
 const text = await response.text();
 if (text.length > 5_000_000)
 	throw new Error("Upstream playlist is unexpectedly large");
-const channels = parseCatalog(text);
+const channels = parseCatalog(text).filter((c) =>
+	["hls", "video"].includes(c.kind),
+);
 if (channels.length < 100 || channels.length > 20000)
 	throw new Error("Unexpected catalog size; review upstream changes");
 const snapshot = {

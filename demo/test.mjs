@@ -85,23 +85,20 @@ try {
 	await page.getByRole("button", { name: "★ Omiljeno", exact: true }).click();
 	assert.equal(await page.locator(".select").count(), 1);
 	await page.getByRole("button", { name: "Svi kanali", exact: true }).click();
-	const external = catalog.find((c) => c.kind === "website");
-	await page
-		.getByLabel("Država", { exact: true })
-		.selectOption(external.country);
-	await page.getByLabel("Pronađi kanal").fill(external.name);
-	await page.locator(`[data-channel-id="${external.id}"]`).click();
-	assert.equal(
-		await page.locator("#source-link").getAttribute("href"),
-		external.url,
+	assert.ok(catalog.every((c) => ["hls", "video"].includes(c.kind)));
+	assert.deepEqual(
+		await page
+			.locator("#country option")
+			.evaluateAll((options) => options.slice(1, 7).map((o) => o.value)),
+		[
+			"Serbia",
+			"Croatia",
+			"Bosnia and Herzegovina",
+			"Slovenia",
+			"Montenegro",
+			"North Macedonia",
+		],
 	);
-	assert.equal(await page.locator("video").getAttribute("src"), null);
-	await page.getByLabel("Samo izvori za browser").check();
-	assert.equal(
-		await page.locator(`[data-channel-id="${external.id}"]`).count(),
-		0,
-	);
-	await page.getByLabel("Samo izvori za browser").uncheck();
 	await page.getByLabel("Država", { exact: true }).selectOption("Serbia");
 	await page.getByLabel("Pronađi kanal").fill("Kurir");
 	await page
@@ -172,7 +169,7 @@ try {
 	}
 	assert.deepEqual(errors, []);
 	console.log(
-		"PASS: country catalog, progressive scrolling, unsupported-source link, browser filter, favorites, search, fullscreen, mobile layout, playback/error handling.",
+		"PASS: country catalog, progressive scrolling, browser-only sources, pinned countries, favorites, search, fullscreen, mobile layout, playback/error handling.",
 	);
 } finally {
 	await browser.close();

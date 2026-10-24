@@ -54,3 +54,23 @@ test("rejects credentials, signed links and local network destinations", () => {
 });
 test("refuses HTML pretending to be a playlist", () =>
 	assert.throws(() => parseCatalog("<html>Error</html>")));
+
+test("M3U export preserves all browser sources and country categories", async () => {
+	const { exportPlaylist } = await import("./export-playlist.mjs");
+	const { readFile } = await import("node:fs/promises");
+	const { channels } = JSON.parse(await readFile("demo/channels.json", "utf8"));
+	const result = parseCatalog(exportPlaylist(channels));
+	assert.equal(result.length, channels.length);
+	assert.deepEqual(
+		new Set(result.map((c) => c.url)),
+		new Set(channels.map((c) => c.url)),
+	);
+	assert.deepEqual([...new Set(result.map((c) => c.country))].slice(0, 6), [
+		"Serbia",
+		"Croatia",
+		"Bosnia and Herzegovina",
+		"Slovenia",
+		"Montenegro",
+		"North Macedonia",
+	]);
+});

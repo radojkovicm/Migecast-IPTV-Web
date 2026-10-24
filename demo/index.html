@@ -14,6 +14,9 @@
 <aside aria-label="TV kanali">
 <nav aria-label="Kategorije"><button type="button" id="all" aria-pressed="true">Svi kanali</button><button type="button" id="favorites" aria-pressed="false">★ Omiljeno</button></nav>
 <label for="search">Pronađi kanal</label><input id="search" type="search" placeholder="Ime kanala" autocomplete="off">
+<label for="country">Država</label><select id="country"><option value="">Sve države</option></select>
+<label class="filter"><input id="playable" type="checkbox"> Samo izvori za browser</label>
+<p id="count" class="catalog-count" aria-live="polite"></p>
 <div id="channels"></div>
 </aside>
 <section class="view" aria-label="Plejer">
@@ -24,9 +27,10 @@
 <button type="button" id="exit-fullscreen" aria-label="Smanji ekran" title="Smanji ekran">↙</button>
 </div>
 <div class="player-bar"><div><p class="eyebrow">UŽIVO</p><h1 id="now">Migecast IPTV Web</h1></div><div class="actions"><button type="button" id="retry" title="Pokušaj ponovo" aria-label="Pokušaj ponovo">↻</button><button type="button" id="fit" aria-label="Popuni ekran" title="Popuni ekran" aria-pressed="false">↔</button><button type="button" id="fullscreen" aria-label="Povećaj plejer" title="Povećaj plejer">⛶</button></div></div>
+<a id="source-link" href="https://github.com/Free-TV/IPTV" class="source-link" target="_blank" rel="noopener noreferrer" hidden>Otvori izvor ↗</a>
 <p id="status" role="status" aria-live="polite">Odaberite jedan od javnih TV kanala.</p>
 <p class="note">Demo koristi javne linkove sa <a href="https://github.com/Free-TV/IPTV/tree/master/lists" target="_blank" rel="noopener noreferrer">Free-TV/IPTV liste</a>. Dostupnost zavisi od emitera i vaše lokacije. Video se učitava direktno od izvora.</p>
 </section>
 </main>
-<footer>TV demo bez naloga · Omiljeni se čuvaju samo u ovom browseru.</footer>
+<footer>Javni TV katalog bez naloga · Omiljeni se čuvaju samo u ovom browseru.</footer>
 </body></html>

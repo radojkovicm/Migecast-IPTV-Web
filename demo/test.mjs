@@ -56,7 +56,28 @@ try {
 	}
 	await page.goto(`http://127.0.0.1:${server.address().port}`);
 	await page.locator(".select").first().waitFor();
-	assert.equal(await page.locator(".select").count(), 3);
+
+	const catalog = JSON.parse(
+		await readFile("demo/channels.json", "utf8"),
+	).channels;
+	assert.ok(catalog.length > 1000);
+	assert.equal(
+		await page.locator("#country option").count(),
+		new Set(catalog.map((c) => c.country)).size + 1,
+	);
+	assert.equal(await page.locator(".select").count(), 80);
+	await page.locator("#channels").evaluate((el) => {
+		el.scrollTop = el.scrollHeight;
+	});
+	await page.waitForFunction(
+		() => document.querySelectorAll(".select").length > 80,
+	);
+	await page.getByLabel("Država", { exact: true }).selectOption("Serbia");
+	assert.equal(
+		await page.locator(".select").count(),
+		catalog.filter((c) => c.country === "Serbia").length,
+	);
+	await page.getByLabel("Pronađi kanal").fill("Kurir");
 	await page
 		.getByRole("button", { name: "Omiljeno: Kurir TV", exact: true })
 		.click();
@@ -64,9 +85,25 @@ try {
 	await page.getByRole("button", { name: "★ Omiljeno", exact: true }).click();
 	assert.equal(await page.locator(".select").count(), 1);
 	await page.getByRole("button", { name: "Svi kanali", exact: true }).click();
-	await page.getByLabel("Pronađi kanal").fill("deluxe");
-	assert.equal(await page.locator(".select").count(), 1);
-	await page.getByLabel("Pronađi kanal").fill("");
+	const external = catalog.find((c) => c.kind === "website");
+	await page
+		.getByLabel("Država", { exact: true })
+		.selectOption(external.country);
+	await page.getByLabel("Pronađi kanal").fill(external.name);
+	await page.locator(`[data-channel-id="${external.id}"]`).click();
+	assert.equal(
+		await page.locator("#source-link").getAttribute("href"),
+		external.url,
+	);
+	assert.equal(await page.locator("video").getAttribute("src"), null);
+	await page.getByLabel("Samo izvori za browser").check();
+	assert.equal(
+		await page.locator(`[data-channel-id="${external.id}"]`).count(),
+		0,
+	);
+	await page.getByLabel("Samo izvori za browser").uncheck();
+	await page.getByLabel("Država", { exact: true }).selectOption("Serbia");
+	await page.getByLabel("Pronađi kanal").fill("Kurir");
 	await page
 		.getByRole("button", { name: "Povećaj plejer", exact: true })
 		.click();
@@ -100,7 +137,15 @@ try {
 		});
 	if (process.env.LIVE_DEMO === "1") {
 		for (const name of ["Kurir TV", "DELUXE MUSIC", "Tagesschau24"]) {
-			await page.getByRole("button", { name, exact: true }).click();
+			await page.getByLabel("Država", { exact: true }).selectOption("");
+			await page.getByLabel("Pronađi kanal").fill(name);
+			await page
+				.locator(".select")
+				.filter({
+					has: page.locator("span", { hasText: new RegExp(`^${name}$`, "i") }),
+				})
+				.first()
+				.click();
 			await page.waitForFunction(
 				() => {
 					const v = document.querySelector("video");
@@ -119,7 +164,7 @@ try {
 				body: "",
 			}),
 		);
-		await page.getByRole("button", { name: "Kurir TV", exact: true }).click();
+		await page.locator(".select").first().click();
 		await page
 			.getByRole("status")
 			.filter({ hasText: "Kanal trenutno nije dostupan" })
@@ -127,7 +172,7 @@ try {
 	}
 	assert.deepEqual(errors, []);
 	console.log(
-		"PASS: catalog, favorites persistence, search, mouse fullscreen exit, mobile layout, playback/error handling.",
+		"PASS: country catalog, progressive scrolling, unsupported-source link, browser filter, favorites, search, fullscreen, mobile layout, playback/error handling.",
 	);
 } finally {
 	await browser.close();

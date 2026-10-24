@@ -27,7 +27,8 @@
 		"release:verify": "node scripts/verify-release.mjs",
 		"test:release-runtime": "node scripts/test-release-runtime.mjs",
 		"demo:build": "node demo/build.mjs",
-		"demo:test": "node demo/test.mjs"
+		"demo:test": "node --test demo/catalog.test.mjs && node demo/test.mjs",
+		"demo:sync": "node demo/sync-catalog.mjs"
 	},
 	"dependencies": {
 		"@node-rs/argon2": "2.2.2",

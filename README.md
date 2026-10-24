@@ -1,8 +1,8 @@
 # Migecast IPTV Web
 
 A browser-based IPTV player with large, simple controls and a Serbian Latin interface.
-The public demo includes **Kurir TV, DELUXE MUSIC and Tagesschau24** — no login,
-subscription or backend required.
+The public demo includes the Free-TV/IPTV catalog organized by country — no login,
+subscription or backend required. Search channels, choose a country and save favorites.
 
 ![Migecast IPTV Web demo: channel list, favorites and player](docs/images/demo-desktop.png)
 
@@ -12,12 +12,11 @@ subscription or backend required.
 
 | Edition | Features | Hosting |
 | --- | --- | --- |
-| Public TV demo | Three public channels, search, saved favorites, fullscreen and picture fit | Cloudflare Pages, Vercel or any static HTTPS host |
+| Public TV demo | Country catalog, continuous scrolling, search, saved favorites, fullscreen and picture fit | Cloudflare Pages, Vercel or any static HTTPS host |
 | Self-hosted application | Owner-managed accounts and playlists, live TV, movies, series, resume and per-user favorites | Your own Node.js, PostgreSQL and FFmpeg server |
 
-This repository is a standalone public snapshot. The demo contains only the
-three channels listed above; movies, series and account management belong to the
-self-hosted edition. No hosted demo URL is available yet.
+This repository is a standalone public application. Movies, series and account
+management belong to the self-hosted edition; the public demo has no accounts.
 
 ## Try the public demo locally
 
@@ -56,13 +55,33 @@ See [self-hosting](docs/MANUAL_DEPLOYMENT.md),
 
 ## Public channels
 
-`demo/channels.json` contains a small selection of links from the
+`demo/channels.json` contains a versioned catalog imported from the
 [Free-TV/IPTV public lists](https://github.com/Free-TV/IPTV/tree/master/lists).
 Only links are included; no channel logos, recordings or programme data are
 redistributed. Listing a URL is not a grant of rights in its programming.
 Links can stop working or be geographically restricted. HTTPS, browser-compatible
 codecs and source CORS support are required for the static demo. It cannot repair
 an unavailable source or bypass a source's access restrictions.
+
+### Catalog scope and refresh
+
+The current snapshot contains **2,051 entries across 97 countries/groups**.
+**1,502** entries have a direct HTTPS HLS/video URL; that is format eligibility,
+not a guarantee of playback or permission. Other entries remain searchable with
+an external source link or an explanation. Duplicate entries are removed, and
+credential-bearing URLs, signed links and literal private-network destinations
+are not retained. No paid lists or private accounts are included.
+
+`pnpm demo:sync` downloads the upstream playlist at a recorded Git revision and
+atomically replaces the snapshot. Review the changed catalog, run tests and commit
+it before deployment. The ordinary demo build uses the checked-in snapshot, so
+an upstream outage cannot break an otherwise reproducible build.
+
+The static host serves the interface only. Video travels directly from the source
+to each viewer. CORS, geo-blocking, HTTPS and source availability still apply;
+there is no proxy, transcoding or access-control bypass. Public availability is
+not a license to rebroadcast a channel. Respect broadcaster terms and remove
+entries when required.
 
 ## Development
 

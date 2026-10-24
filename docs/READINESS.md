@@ -20,3 +20,7 @@ Before publishing, scan the exact Git index and complete new repository history
 for secrets and private identifiers. Review commit metadata, images, archives,
 Actions output and artifacts. A clean current tree does not sanitize old history.
 The public repository must not inherit private deployment workflows or credentials.
+
+The public catalog parser tests cover countries, stable IDs, deduplication,
+unsupported links and removal of sensitive/local destinations. Browser tests
+cover country/search filters, continuous scrolling and external-source behavior.

@@ -24,19 +24,56 @@ function save() {
 		);
 	} catch {}
 }
+let filtered = [],
+	rendered = 0,
+	observer;
+const countryLabel = (channel) => {
+	try {
+		return channel.countryCode
+			? new Intl.DisplayNames(["sr-Latn"], { type: "region" }).of(
+					channel.countryCode,
+				)
+			: channel.country;
+	} catch {
+		return channel.country;
+	}
+};
 function render() {
 	$("channels").replaceChildren();
-	const visible = channels.filter(
+	filtered = channels.filter(
 		(c) =>
 			(!favoritesOnly || favorites.has(c.id)) &&
+			(!$("country").value || c.country === $("country").value) &&
+			(!$("playable").checked || ["hls", "video"].includes(c.kind)) &&
 			c.name.toLowerCase().includes($("search").value.toLowerCase()),
 	);
-	for (const channel of visible) {
+	rendered = 0;
+	observer?.disconnect();
+	$("count").textContent = `${filtered.length} kanala`;
+	$("channels").scrollTop = 0;
+	appendChannels();
+	if (!filtered.length) {
+		const message = document.createElement("p");
+		message.className = "empty";
+		message.textContent = favoritesOnly
+			? "Nema omiljenih kanala za izabrane filtere. Označite kanale zvezdicom."
+			: "Nema kanala za izabrane filtere.";
+		$("channels").append(message);
+	}
+}
+function appendChannels() {
+	$("more-channels")?.remove();
+	for (const channel of filtered.slice(rendered, rendered + 80)) {
 		const row = document.createElement("div");
 		row.className = `channel${selected?.id === channel.id ? " active" : ""}`;
 		const button = document.createElement("button");
 		button.className = "select";
-		button.textContent = channel.name;
+		button.dataset.channelId = channel.id;
+		const title = document.createElement("span");
+		title.textContent = channel.name;
+		const detail = document.createElement("small");
+		detail.textContent = `${countryLabel(channel)} · ${channel.kind === "hls" || channel.kind === "video" ? "TV" : channel.kind === "website" ? "Web izvor" : "Drugi plejer"}`;
+		button.append(title, detail);
 		button.setAttribute("aria-pressed", String(selected?.id === channel.id));
 		button.onclick = () => play(channel);
 		button.ondblclick = () => expand();
@@ -55,15 +92,23 @@ function render() {
 		row.append(button, star);
 		$("channels").append(row);
 	}
-	if (!visible.length) {
-		const message = document.createElement("p");
-		message.className = "empty";
-		message.textContent = favoritesOnly
-			? "Označite kanale zvezdicom u listi Svi kanali."
-			: "Nema pronađenih kanala.";
-		$("channels").append(message);
+	rendered += 80;
+	if (rendered < filtered.length) {
+		const sentinel = document.createElement("div");
+		sentinel.id = "more-channels";
+		sentinel.textContent = "Učitavanje kanala…";
+		$("channels").append(sentinel);
+		observer?.disconnect();
+		observer = new IntersectionObserver(
+			(entries) => {
+				if (entries.some((e) => e.isIntersecting)) appendChannels();
+			},
+			{ root: $("channels"), rootMargin: "160px" },
+		);
+		observer.observe(sentinel);
 	}
 }
+
 function stop() {
 	active = false;
 	clearTimeout(timeout);
@@ -78,7 +123,8 @@ function stop() {
 function fail() {
 	stop();
 	status.textContent =
-		"Kanal trenutno nije dostupan. Pokušajte ponovo ili izaberite drugi kanal.";
+		"Kanal trenutno nije dostupan u ovom browseru ili na vašoj lokaciji. Pokušajte drugi kanal ili otvorite izvor.";
+	$("source-link").hidden = false;
 }
 function attemptPlay() {
 	video.play().catch(() => {
@@ -86,16 +132,42 @@ function attemptPlay() {
 		status.textContent = "Pritisnite ▶ u plejeru da pokrenete kanal.";
 	});
 }
+function markSelection() {
+	for (const button of document.querySelectorAll(".select")) {
+		const chosen = button.dataset.channelId === selected?.id;
+		button.setAttribute("aria-pressed", String(chosen));
+		button.parentElement.classList.toggle("active", chosen);
+	}
+}
 function play(channel) {
 	stop();
+	$("source-link").href = channel.url.startsWith("https:")
+		? channel.url
+		: "https://github.com/Free-TV/IPTV/tree/master/lists";
+	$("source-link").hidden = true;
+	if (!["hls", "video"].includes(channel.kind)) {
+		selected = channel;
+		$("now").textContent = channel.name;
+		$("placeholder").hidden = false;
+		status.textContent =
+			channel.kind === "website"
+				? "Ovaj izvor se gleda na njegovom sajtu. Otvorite izvor ispod plejera."
+				: "Ovaj kanal nema direktan HTTPS video za browser. Pogledajte izvorni katalog.";
+		$("source-link").hidden = false;
+		markSelection();
+		return;
+	}
 	active = true;
 	selected = channel;
 	$("now").textContent = channel.name;
 	$("placeholder").hidden = true;
 	status.textContent = "Povezivanje…";
-	render();
+	markSelection();
 	timeout = setTimeout(fail, 25000);
-	if (video.canPlayType("application/vnd.apple.mpegurl")) {
+	if (
+		channel.kind === "video" ||
+		video.canPlayType("application/vnd.apple.mpegurl")
+	) {
 		video.src = channel.url;
 		attemptPlay();
 	} else if (globalThis.Hls?.isSupported()) {
@@ -183,6 +255,8 @@ $("fit").onclick = () => {
 	$("fit").setAttribute("aria-label", $("fit").title);
 };
 $("search").oninput = render;
+$("country").onchange = render;
+$("playable").onchange = render;
 for (const [id, value] of [
 	["all", false],
 	["favorites", true],
@@ -197,7 +271,20 @@ window.addEventListener("pagehide", stop);
 try {
 	const response = await fetch("channels.json");
 	if (!response.ok) throw new Error();
-	channels = await response.json();
+	const snapshot = await response.json();
+	channels = snapshot.channels;
+	if (!Array.isArray(channels)) throw new Error("Invalid catalog");
+	const countries = new Map(channels.map((c) => [c.country, countryLabel(c)]));
+	for (const [country, label] of [...countries].sort((a, b) =>
+		a[1].localeCompare(b[1], "sr-Latn"),
+	)) {
+		const option = document.createElement("option");
+		option.value = country;
+		option.textContent = label;
+		$("country").append(option);
+	}
+	$("status").textContent =
+		`${channels.length} kanala iz ${countries.size} država i grupa. Izaberite državu ili pronađite kanal.`;
 	render();
 } catch {
 	status.textContent = "Lista kanala nije učitana. Osvežite stranicu.";

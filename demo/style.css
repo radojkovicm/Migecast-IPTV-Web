@@ -297,3 +297,64 @@ html:fullscreen {
 		transition: background 0.15s ease;
 	}
 }
+
+select {
+	width: 100%;
+	min-height: 48px;
+	padding: 10px;
+	border: 1px solid #41536c;
+	border-radius: 9px;
+	background: #101822;
+	color: inherit;
+	font: inherit;
+	margin: 8px 0 12px;
+}
+.filter {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	color: #c0cee2;
+	font-size: 15px;
+}
+.filter input {
+	width: 22px;
+	height: 22px;
+	margin: 0;
+}
+.catalog-count {
+	font-size: 14px;
+	color: #a7b9d3;
+}
+#channels {
+	max-height: 58vh;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	padding: 4px;
+}
+.channel .select {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+	gap: 3px;
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+.channel small {
+	font-size: 12px;
+	font-weight: 400;
+	color: #b7c7dc;
+}
+.source-link {
+	display: inline-block;
+	color: #aac6ff;
+	padding: 12px 0;
+}
+.source-link[hidden] {
+	display: none;
+}
+#more-channels {
+	padding: 12px;
+	font-size: 14px;
+	color: #a7b9d3;
+}

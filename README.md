@@ -1,5 +1,7 @@
 # Migecast IPTV Web
 
+**[Watch the public demo](https://migecast-iptv-web.pages.dev/)** — opens immediately, without login.
+
 A browser-based IPTV player with large, simple controls and a Serbian Latin interface.
 The public demo includes the Free-TV/IPTV catalog organized by country — no login,
 subscription or backend required. Search channels, choose a country and save favorites.
@@ -33,6 +35,12 @@ needed. The demo does not contact a private application or proxy video through
 its hosting provider. Streams go directly from the listed source to the viewer.
 
 ### Cloudflare Pages (recommended for the demo)
+
+The public demo above is deployed with **Direct Upload**. GitHub pushes do not
+update that site automatically. To publish a new reviewed snapshot, run
+`pnpm demo:build` and upload `demo/dist` as a new production deployment in Pages.
+For your own project with automatic Git builds, use the following settings.
+
 
 Connect your repository, select **None** as the framework, use
 `pnpm demo:build` as the build command and `demo/dist` as the output directory.
